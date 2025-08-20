@@ -34,13 +34,13 @@
 
 系统采用经典的多层架构设计：
 
-```
+```mermaid
 graph TD
     A[客户端] --> B[Spring Security 认证层]
     B --> C[REST API 控制层]
     
-    C --> D[服务层]
-    D --> E[数据访问层]
+    C --> D[服务层 Service Layer]
+    D --> E[数据访问层 DAO]
     E --> F[(MySQL数据库)]
     
     D --> G[Redis缓存]
@@ -49,11 +49,17 @@ graph TD
     D --> J[邮件服务]
     
     subgraph 核心业务模块
-    K[用户模块] --> L[视频模块]
-    L --> M[评论模块]
-    K --> N[通知模块]
-    K --> O[鱼币模块]
+    K[用户模块]
+    L[视频模块]
+    M[评论模块]
+    N[通知模块]
+    O[鱼币模块]
     end
+
+    K --- L
+    L --- M
+    K --- N
+    K --- O
     
     D --- 核心业务模块
 ```
