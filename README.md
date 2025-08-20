@@ -10,13 +10,15 @@
 
 以下是系统的部分功能界面展示：
 
-![首页视频列表](项目截图/首页.gif)
+![视频播放](项目截图/视频播放.png)
 
-![视频播放与评论](项目截图/视频播放.gif)
+![用户投喂鱼币](项目截图/投喂鱼币.png)
 
-![用户投喂鱼币](项目截图/投喂鱼币.gif)
+![上传视频](项目截图/视频上传.png)
 
-*注：请将实际截图/动图放入项目目录的"项目截图"文件夹中*
+![消息通知](项目截图/消息通知.png)
+
+![视频、用户搜索](项目截图/搜索.png)
 
 ## 项目概述
 
@@ -174,34 +176,82 @@ src/main/java/com/example/videoapp/
 
 ### 环境变量
 
-系统使用以下环境变量进行安全配置：
+系统使用以下环境变量进行配置，确保在运行前正确设置：
 
-- `JWT_SECRET` - JWT签名密钥
-- `PROD_DB_PASSWORD` - 数据库密码
-- `PROD_RABBITMQ_PASSWORD` - RabbitMQ密码
+**开发环境变量：**
+- `DB_USERNAME` - 开发环境数据库用户名
+- `DEV_DB_PASSWORD` - 开发环境数据库密码
+- `RABBITMQ_USERNAME` - RabbitMQ用户名
+- `DEV_RABBITMQ_PASSWORD` - 开发环境RabbitMQ密码
 - `TENCENT_COS_SECRET_ID` - 腾讯云COS SecretId
 - `TENCENT_COS_SECRET_KEY` - 腾讯云COS SecretKey
+- `TENCENT_COS_BUCKET_NAME` - 腾讯云COS存储桶名称
+- `TENCENT_COS_REGION` - 腾讯云COS地域
+- `MAIL_USERNAME` - 邮箱地址
 - `MAIL_PASSWORD` - 邮箱授权码
+- `JWT_SECRET` - JWT签名密钥
 
-### Docker部署
+**可选环境变量（有默认值）：**
+- `DB_HOST` - 数据库主机地址，默认为127.0.0.1
+- `DB_PORT` - 数据库端口，默认为3306
+- `DB_NAME` - 数据库名称，默认为videoapp
+- `REDIS_HOST` - Redis主机地址，默认为localhost
+- `REDIS_PORT` - Redis端口，默认为16379
+- `RABBITMQ_HOST` - RabbitMQ主机地址，默认为localhost
+- `RABBITMQ_PORT` - RabbitMQ端口，默认为5672
+- `MAIL_HOST` - 邮件服务器地址，默认为smtp.qq.com
+- `MAIL_PORT` - 邮件服务器端口，默认为587
 
-项目提供Docker Compose配置，可快速搭建开发环境：
+**生产环境变量：**
+- `PROD_DB_PASSWORD` - 生产环境数据库密码
+- `PROD_RABBITMQ_PASSWORD` - 生产环境RabbitMQ密码
 
+### 快速开始（本地开发）
+
+1. **克隆项目**
 ```bash
-# 启动开发环境的Redis和RabbitMQ服务
+git clone https://github.com/ikun0731/videoapp-backend.git
+cd videoapp-backend
+```
+
+2. **启动开发环境依赖服务（Redis和RabbitMQ）**
+```bash
 docker-compose up -d
+```
+
+3. **配置环境变量**
+
+创建`.env`文件并设置必要的环境变量：
+```
+DB_USERNAME=your_db_username
+DEV_DB_PASSWORD=your_db_password
+RABBITMQ_USERNAME=guest
+DEV_RABBITMQ_PASSWORD=guest
+JWT_SECRET=your_jwt_secret
+# 根据需要设置其他变量
+```
+
+4. **运行应用**
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 ### 生产环境部署
 
-1. 构建项目
+1. **构建项目**
 ```bash
 ./mvnw clean package -DskipTests
 ```
 
-2. 部署JAR文件
+2. **部署JAR文件**
 ```bash
 java -jar target/videoapp-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+```
+
+3. **或使用Docker部署（可选）**
+```bash
+docker build -t videoapp .
+docker run -d -p 8081:8081 --env-file .env.prod --name videoapp-container videoapp
 ```
 
 ## 功能亮点

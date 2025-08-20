@@ -20,8 +20,9 @@ buildNumber.properties
 spring-boot-*.pid
 *.log
 logs/
-application-dev.properties
-application-dev.yml
+# 应用配置 - 保留开发配置，移除个人本地配置
+# application-dev.properties
+# application-dev.yml
 application-local.properties
 application-local.yml
 
