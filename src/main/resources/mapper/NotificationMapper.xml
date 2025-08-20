@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.videoapp.mapper.NotificationMapper">
+
+    <insert id="insert" parameterType="com.example.videoapp.entity.Notification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notifications (recipient_id, sender_id, type, related_entity_id, content, is_read, created_at)
+        VALUES (#{recipientId}, #{senderId}, #{type}, #{relatedEntityId}, #{content}, #{isRead}, #{createdAt})
+    </insert>
+
+    <select id="findByRecipientId" resultType="com.example.videoapp.entity.Notification" useCache="false">
+        SELECT * FROM notifications
+        WHERE recipient_id = #{recipientId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" resultType="com.example.videoapp.entity.Notification">
+        SELECT * FROM notifications WHERE id = #{id}
+    </select>
+
+    <update id="update" parameterType="com.example.videoapp.entity.Notification">
+        UPDATE notifications
+        SET is_read = #{isRead}
+        WHERE id = #{id}
+    </update>
+    <update id="markAllAsReadByRecipientId">
+        UPDATE notifications
+        SET is_read = 1
+        WHERE recipient_id = #{recipientId} AND is_read = 0
+    </update>
+</mapper>

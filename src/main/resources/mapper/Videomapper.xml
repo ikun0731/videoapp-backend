@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.videoapp.mapper.VideoMapper">
+
+    <!-- 插入新视频，并返回自动生成的ID -->
+    <insert id="insert" parameterType="com.example.videoapp.entity.Video"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO videos (user_id, title, description, video_url, cover_url, view_count, created_at, updated_at, fish_count)
+        VALUES (#{userId}, #{title}, #{description}, #{videoUrl}, #{coverUrl}, #{viewCount}, #{createdAt}, #{updatedAt}, #{fishCount})
+    </insert>
+
+    <!-- 查询所有视频，支持多种排序方式 -->
+    <select id="findAll" resultType="com.example.videoapp.entity.Video">
+        SELECT * FROM videos
+        <choose>
+            <when test="sortBy == 'views'">
+                ORDER BY view_count DESC
+            </when>
+            <when test="sortBy == 'popularity'">
+                ORDER BY fish_count DESC
+            </when>
+            <otherwise>
+                ORDER BY created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 根据ID查找视频 -->
+    <select id="findById" resultType="com.example.videoapp.entity.Video">
+        SELECT * FROM videos WHERE id = #{id}
+    </select>
+
+    <!-- 视频详情结果映射，包含上传者信息 -->
+    <resultMap id="VideoDetailResultMap" type="com.example.videoapp.DTO.VideoDetailDTO">
+        <id property="id" column="video_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="video_title"/>
+        <result property="description" column="video_description"/>
+        <result property="videoUrl" column="video_url"/>
+        <result property="coverUrl" column="cover_url"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="fishCount" column="fish_count"/>
+        <result property="isFishFed" column="is_fish_fed"/>
+        <!-- 关联上传者信息 -->
+        <association property="uploader" javaType="com.example.videoapp.DTO.UploaderDTO">
+            <id property="id" column="uploader_id"/>
+            <result property="nickname" column="uploader_nickname"/>
+            <result property="avatarUrl" column="uploader_avatar_url"/>
+            <result property="username" column="uploader_username"/>
+        </association>
+    </resultMap>
+
+    <select id="findByIdWithUploader" resultMap="VideoDetailResultMap">
+        SELECT
+            v.id AS video_id, v.user_id, v.title AS video_title, v.description AS video_description,
+            v.video_url, v.cover_url, v.view_count, v.fish_count, v.created_at, v.updated_at,
+            u.id AS uploader_id, u.nickname AS uploader_nickname, u.avatar_url AS uploader_avatar_url, u.username AS uploader_username,
+            (ft.id IS NOT NULL) AS is_fish_fed
+        FROM videos v JOIN users u ON v.user_id = u.id
+                      LEFT JOIN fish_transactions ft ON v.id = ft.video_id AND ft.user_id = #{currentUserId}
+        WHERE v.id = #{videoId}
+    </select>
+
+    <select id="findByUserId" resultType="com.example.videoapp.entity.Video">
+        SELECT * FROM videos WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
+    <select id="searchByTitle" resultType="com.example.videoapp.entity.Video">
+        SELECT * FROM videos
+        WHERE title LIKE CONCAT('%', #{keyword}, '%')
+        <choose>
+            <when test="sortBy == 'views'">
+                ORDER BY view_count DESC
+            </when>
+            <when test="sortBy == 'popularity'">
+                ORDER BY fish_count DESC
+            </when>
+            <otherwise>
+                ORDER BY created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <update id="incrementViewCount">
+        UPDATE videos SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="incrementFishCount">
+        UPDATE videos SET fish_count = fish_count + 1 WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM videos WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.example.videoapp.entity.Video">
+        UPDATE videos
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="coverUrl != null">
+                cover_url = #{coverUrl},
+            </if>
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

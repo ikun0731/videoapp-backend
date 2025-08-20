@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.videoapp.mapper.CommentMapper">
+
+    <resultMap id="CommentDetailResultMap" type="com.example.videoapp.DTO.CommentDetailDTO">
+        <id property="id" column="comment_id"/>
+        <result property="videoId" column="video_id"/>
+        <result property="content" column="comment_content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <association property="commenter" javaType="com.example.videoapp.DTO.CommenterDTO">
+            <id property="id" column="commenter_id"/>
+            <result property="nickname" column="commenter_nickname"/>
+            <result property="avatarUrl" column="commenter_avatar_url"/>
+            <result property="username" column="commenter_username"/>
+        </association>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.videoapp.entity.Comment"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comments (video_id, user_id, content, created_at, updated_at)
+        VALUES (#{videoId}, #{userId}, #{content}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <select id="findByVideoId" resultMap="CommentDetailResultMap">
+        SELECT
+            c.id AS comment_id,
+            c.video_id,
+            c.content AS comment_content,
+            c.created_at,
+            c.updated_at,
+            u.id AS commenter_id,
+            u.nickname AS commenter_nickname,
+            u.avatar_url AS commenter_avatar_url,
+            -- 【修改2】在 SELECT 语句中查询出 username 字段
+            u.username AS commenter_username
+        FROM
+            comments c
+                JOIN
+            users u ON c.user_id = u.id
+        WHERE
+            c.video_id = #{videoId}
+        ORDER BY
+            c.created_at DESC
+    </select>
+
+    <select id="findById" resultType="com.example.videoapp.entity.Comment">
+        SELECT * FROM comments WHERE id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM comments WHERE id = #{id}
+    </delete>
+
+    <update id="update">
+        UPDATE comments
+        SET
+            content = #{content},
+            updated_at = #{updatedAt}
+        WHERE
+            id = #{id}
+    </update>
+
+    <delete id="deleteByVideoId">
+        DELETE FROM comments WHERE video_id = #{videoId}
+    </delete>
+</mapper>

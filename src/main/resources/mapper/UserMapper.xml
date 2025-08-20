@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.videoapp.mapper.UserMapper">
+
+    <insert id="insert" parameterType="com.example.videoapp.entity.User"
+            useGeneratedKeys="true" keyProperty="id">
+
+        <!-- 用户插入语句，包含鱼币余额和最近签到日期字段 -->
+        INSERT INTO users (username, nickname, password, email, avatar_url, created_at, updated_at, fish_balance, last_daily_claim)
+        VALUES (#{username}, #{nickname}, #{password}, #{email}, #{avatarUrl}, #{createdAt}, #{updatedAt}, #{fishBalance}, #{lastDailyClaim})
+
+    </insert>
+    <select id="findByUsername" resultType="com.example.videoapp.entity.User">
+        SELECT *
+        FROM users
+        WHERE username=#{username}
+    </select>
+    <select id="findByNickname" resultType="com.example.videoapp.entity.User">
+        SELECT *
+        FROM users
+        WHERE nickname=#{nickname}
+    </select>
+    <select id="findByEmail" resultType="com.example.videoapp.entity.User">
+        SELECT *
+        FROM users
+        WHERE email=#{email}
+    </select>
+    <update id="updateProfile" parameterType="com.example.videoapp.entity.User">
+        UPDATE users
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="avatarUrl != null">
+                avatar_url = #{avatarUrl},
+            </if>
+
+            <if test="password != null">
+                password = #{password},
+            </if>
+
+        </set>
+        WHERE id = #{id}
+    </update>
+    <select id="searchByNickName" resultType="com.example.videoapp.entity.User">
+        SELECT * FROM users
+        WHERE nickname LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY created_at DESC
+    </select>
+    <update id="updateUserFish">
+        UPDATE users
+        SET
+            fish_balance = #{fishBalance},
+            last_daily_claim = #{lastDailyClaim}
+        WHERE
+            id = #{id}
+    </update>
+    <select id="findById" resultType="com.example.videoapp.entity.User">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+</mapper>
