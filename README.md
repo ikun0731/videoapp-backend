@@ -281,8 +281,8 @@ docker run -d -p 8081:8081 --env-file .env.prod --name videoapp-container videoa
 
 ## 作者信息
 
-渔鱼网是一个学习项目，作为Java后端开发的实践练习而创建。通过这个项目，我学习了Spring Boot、Redis、RabbitMQ等技术的基本应用，希望能在实际面试中展示我的学习成果和成长潜力。
+渔鱼网是一个学习项目，作为Java后端开发的实践练习而创建。通过这个项目，我学习了Spring Boot、Redis、RabbitMQ等技术的基本应用。
 
 ---
 
-*注：这是一个面试展示项目，欢迎提供改进建议。*
+*注：这是一个展示项目，欢迎提供改进建议。*
