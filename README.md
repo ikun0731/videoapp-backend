@@ -6,6 +6,8 @@
 
 **在线访问地址：** [video.yuyuwang.online](http://video.yuyuwang.online)
 
+**前端仓库地址：** https://github.com/ikun0731/videoapp-frontend
+
 ## 项目展示
 
 <div align="center">
